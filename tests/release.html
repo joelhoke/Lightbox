@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Light study — release diagnostics</title>
+</head>
+<body>
+  <main id="app">
+    <div id="scene" aria-label="Visual test scene"></div>
+    <header class="study-label"><div><h1>Release diagnostics</h1><p>Pointer release event trace</p></div></header>
+    <aside id="workspace-tools" aria-label="Experiment tools"><div id="editor"></div><div id="controls"></div></aside>
+    <div id="status" class="scene-status" role="status">Loading comparison…</div>
+  <div id="event-log" style="position:absolute;left:24px;bottom:24px;font:11px/1.5 monospace;pointer-events:none;max-width:650px"></div></main>
+  <script type="module" src="./release.ts"></script>
+</body>
+</html>

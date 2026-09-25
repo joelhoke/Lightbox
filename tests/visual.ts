@@ -1,0 +1,30 @@
+import '../src/style.css';
+import { createLightingScene } from '../src/scene.ts';
+import { createControls } from '../src/controls.ts';
+import { createEditor } from '../src/editor.ts';
+import { createTextItem } from '../src/project.ts';
+
+const host = document.querySelector<HTMLElement>('#scene')!;
+const scene = createLightingScene(host);
+const controls = createControls(document.querySelector('#controls')!, scene);
+const editor = createEditor(document.querySelector('#editor')!, host, scene);
+host.addEventListener('study-change', () => controls.refresh());
+await scene.ready;
+await scene.addItem({ ...createTextItem(), text: 'HTML\nselect me', x: -0.16, y: 0, size: 0.035 });
+await scene.addItem({ ...createTextItem(), text: 'FLAT\nLIGHT', treatment: 'flat', x: 0.16, y: 0, size: 0.035, offset: 0.025 });
+await scene.addItem({ ...createTextItem(), text: 'SHADOW', treatment: 'solid', x: 0, y: -0.18, size: 0.045, thickness: 0.015, offset: 0.06 });
+const bitmap = document.createElement('canvas'); bitmap.width = 256; bitmap.height = 128;
+const brush = bitmap.getContext('2d')!;
+brush.fillStyle = '#4d87b8'; brush.fillRect(20, 16, 216, 96);
+brush.fillStyle = '#d17b64'; brush.beginPath(); brush.arc(76, 64, 30, 0, Math.PI * 2); brush.fill();
+brush.clearRect(150, 38, 46, 52);
+// Fade the card's lower half all the way to transparent (not a binary cutout).
+brush.globalCompositeOperation = 'destination-in';
+const fade = brush.createLinearGradient(0, 50, 0, 112);
+fade.addColorStop(0, 'rgba(0,0,0,1)'); fade.addColorStop(1, 'rgba(0,0,0,0)');
+brush.fillStyle = fade; brush.fillRect(0, 0, 256, 128);
+await scene.addItem({ id: 'transparent-image', kind: 'image', imageData: bitmap.toDataURL(), width: 0.25, x: 0, y: -0.4, offset: 0.075, alt: 'Blue card with coral circle and a transparent window' });
+scene.selectItem(null);
+document.querySelectorAll<HTMLDetailsElement>('details').forEach((panel) => { panel.open = false; });
+document.querySelector<HTMLElement>('#status')!.hidden = true;
+if (import.meta.hot) import.meta.hot.dispose(() => { controls.dispose(); editor.dispose(); scene.dispose(); });

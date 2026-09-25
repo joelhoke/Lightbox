@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171717" />
+    <meta name="description" content="An Edison bulb, an empty wall, and a little room to experiment with light." />
+    <title>Light study — Edison</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23171717'/%3E%3Cpath d='M16 0v9' stroke='%23d4c2a2' stroke-width='2'/%3E%3Cpath d='M13 9h6v5c4 4 5 12-3 12s-7-8-3-12z' fill='none' stroke='%23e9b469' stroke-width='1.5'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <main id="app">
+      <div id="scene" aria-label="An Edison bulb hanging in front of an empty wall"></div>
+      <header class="study-label" aria-label="Light study, experiment 01">
+        <span class="study-mark" aria-hidden="true">✳</span>
+        <div><h1>Light study</h1><p>01 <span aria-hidden="true">/</span> Edison</p></div>
+      </header>
+      <div id="status" class="scene-status" role="status" aria-live="polite">Setting the light…</div>
+      <aside id="workspace-tools" aria-label="Experiment tools">
+        <div id="editor"></div>
+        <div id="controls"></div>
+      </aside>
+      <footer class="credit">
+        <a href="https://sketchfab.com/3d-models/edison-light-bulb-aeb0e4832f04463280510e550e2cdbd5" target="_blank" rel="noreferrer">Edison Light Bulb</a>
+        <span>by <a href="https://sketchfab.com/ministephen" target="_blank" rel="noreferrer">Fishboe</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a></span>
+      </footer>
+    </main>
+    <noscript>This light study needs JavaScript to render the bulb and its lighting.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

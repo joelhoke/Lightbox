@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Light study — browser checks</title>
+  <style>
+    body { margin: 24px; font: 14px/1.6 system-ui; background: #202020; color: #ddd; }
+    h1 { font-size: 20px; } pre { white-space: pre-wrap; }
+    #test-surface { position: relative; width: 640px; height: 360px; }
+    #test-surface canvas { display: block; width: 100%; height: 100%; }
+    #test-controls { position: absolute; left: -10000px; }
+    iframe { border: 1px solid #555; width: 390px; height: 700px; }
+    .layout { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+    button { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Light study — browser checks</h1>
+  <div class="layout">
+    <section>
+      <pre id="results">Running…</pre>
+      <div id="test-surface"></div>
+      <div id="test-controls"></div>
+      <button id="run" type="button">Run again</button>
+    </section>
+    <section><p>390 × 700 mobile viewport</p><iframe src="./sticker.html" title="Mobile sticker comparison"></iframe></section>
+  </div>
+  <script type="module" src="./browser.ts"></script>
+</body>
+</html>
