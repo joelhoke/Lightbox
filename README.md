@@ -49,7 +49,7 @@ With the dev server running:
 - `/tests/browser.html` exercises WebGL, controls, content types, file round-trips, failed-import recovery, resize, and disposal. Includes a 390 × 700 mobile viewport. Keep the tab visible while tests run.
 - `/tests/visual.html` is an editable comparison of HTML, flat and solid lettering, and a transparent image. Drag the bulb to compare shadows.
 - `/tests/glass.html` compares background refraction over a colored PNG grid with soft fades and a transparent window. The coil stays undistorted. Tune background lens strength with `GLASS.opticalDepth` in `src/config.ts` (currently `0.03` metres).
-- `/tests/sticker.html` compares a circular flower sticker and a padded PNG with a transparent hole/fade. It includes rotation, corner handles, floating/mounted shadows, and 3D text. Add `?hover` to open it in Preview for the temporary hover response.
+- `/tests/sticker.html` compares a circular flower sticker and a padded PNG with a transparent hole/fade. It includes rotation, corner handles, floating/mounted shadows, and 3D text. Add `?hover` to open it in Preview: hover relaxes the corner; pressing and holding the sticker flattens it until release. Saved curl and wall offset remain unchanged.
 - `/tests/release.html` displays a local pointer-event trace for comparing drag/release behavior between browsers, including capture loss and the actual motion setting.
 
 Test pages are not included in the production build.

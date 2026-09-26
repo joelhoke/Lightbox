@@ -9,6 +9,7 @@ import { CordSimulation } from './physics.ts';
 import { ContentLayer } from './content.ts';
 import { createStickerInteraction } from './sticker-interaction.ts';
 import { createStickerHover } from './sticker-hover.ts';
+import { createStickerPress } from './sticker-press.ts';
 import { validateItem, validateProject } from './project.ts';
 import type { SceneItem, StudyProject, ImageStickerPatch } from './project.ts';
 
@@ -182,11 +183,12 @@ export function createLightingScene(container: HTMLElement): LightingScene {
         updateFixture();
         updateHoverCursor();
         const hoverMoving = stickerHover.advance(elapsed);
+        const pressMoving = stickerPress.advance(elapsed);
         content.project(camera);
         rendering.render(settings.brightness > 0);
         // Consumers can capture the canvas before WebGL discards its drawing buffer.
         container.dispatchEvent(new Event('study-render'));
-        if (physics.awake || hoverMoving) invalidate();
+        if (physics.awake || hoverMoving || pressMoving) invalidate();
         else lastTime = 0;
       } catch (error) {
         console.error('Unable to render the light study.', error);
@@ -419,6 +421,28 @@ export function createLightingScene(container: HTMLElement): LightingScene {
   }
   const stickerInteraction = createStickerInteraction(container, camera, content, updateImageSticker, () => arrangeMode);
   const stickerHover = createStickerHover(container, renderer.domElement, camera, content, () => !arrangeMode, invalidate);
+  const stickerPress = createStickerPress(container, renderer.domElement, content, () => !arrangeMode, (event) => {
+    pointOnPlane(event, 0);
+    const targets = [fixture, ...[...content.nodes.values()].map((node) => node.root)];
+    for (const hit of raycaster.intersectObjects(targets, true)) {
+      const mesh = hit.object as THREE.Mesh;
+      let visible = true;
+      for (let parent: THREE.Object3D | null = mesh; parent; parent = parent.parent) if (!parent.visible) visible = false;
+      if (!visible) continue;
+      const material = (Array.isArray(mesh.material) ? mesh.material[hit.face?.materialIndex ?? 0] : mesh.material) as THREE.MeshStandardMaterial;
+      if (!material?.visible || material.opacity === 0) continue;
+      // Transparent PNG padding/holes must not become invisible press targets.
+      if (hit.uv && material.map?.image instanceof HTMLCanvasElement) {
+        const image = material.map.image, uv = material.map.transformUv(hit.uv.clone());
+        const alpha = image.getContext('2d')!.getImageData(Math.min(image.width - 1, Math.floor(uv.x * image.width)), Math.min(image.height - 1, Math.floor(uv.y * image.height)), 1, 1).data[3] / 255;
+        if (alpha < Math.max(material.alphaTest, 1 / 255)) continue;
+      }
+      let object: THREE.Object3D | null = mesh;
+      while (object && object !== fixture && !object.userData.itemId) object = object.parent;
+      return object?.userData.itemId ? content.nodes.get(String(object.userData.itemId)) ?? null : null;
+    }
+    return null;
+  }, invalidate);
 
   return {
     ready,
@@ -432,7 +456,7 @@ export function createLightingScene(container: HTMLElement): LightingScene {
     updateImageSticker,
     removeItem(id) { stickerInteraction.cancel(); content.remove(id); if (selectedId === id) selectedId = null; invalidate(); changed(); },
     selectItem,
-    setArrangeMode(value) { stickerHover.reset(); stickerInteraction.cancel(); finishDrag(true); arrangeMode = value; content.setArrange(value); invalidate(); changed(); },
+    setArrangeMode(value) { stickerPress.reset(); stickerHover.reset(); stickerInteraction.cancel(); finishDrag(true); arrangeMode = value; content.setArrange(value); invalidate(); changed(); },
     setMotionEnabled(value) { motionEnabled = value; if (!value) resetBulb(); changed(); },
     resetBulb,
     exportProject() { return { format: 'edison-light-study', version: 2, lighting: { ...settings }, motionEnabled, items: content.items }; },
@@ -440,6 +464,7 @@ export function createLightingScene(container: HTMLElement): LightingScene {
       const project = validateProject(value);
       stickerInteraction.cancel();
       await content.replace(project.items);
+      stickerPress.reset();
       stickerHover.reset();
       finishDrag(true); selectedId = null;
       settings = project.lighting; motionEnabled = project.motionEnabled;
@@ -467,6 +492,7 @@ export function createLightingScene(container: HTMLElement): LightingScene {
       events.abort();
       stickerInteraction.dispose();
       stickerHover.dispose();
+      stickerPress.dispose();
       finishDrag(true);
       clearHover();
       content.dispose();

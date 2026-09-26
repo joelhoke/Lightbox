@@ -65,6 +65,7 @@ export const STICKER = {
   maxAngle: 150, // Degrees. Keep below 180 to avoid rolling the corner onto itself.
   segments: 64, // Grid divisions per axis. Higher improves tight curls at a geometry cost.
   backingColor: '#f2ecdf', roughness: 0.9,
+  press: { flattenTime: 0.08, releaseTime: 0.18, settleEpsilon: 0.0001, maxDelta: 0.05 }, // Seconds; temporary press-to-flat easing.
   hover: {
     strength: 0.20, // Fraction of saved curl removed at closest approach (70 → 56).
     radiusScale: 1.25, minRadius: 48, maxRadius: 140, // Projected peel depth; CSS pixels, independent of DPR.

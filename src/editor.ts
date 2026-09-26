@@ -136,7 +136,7 @@ export function createEditor(host: HTMLElement, sceneHost: HTMLElement, scene: L
     query<HTMLInputElement>('[value="preview"]').checked = !scene.arrangeMode;
     query<HTMLElement>('#mode-help').textContent = scene.arrangeMode
       ? 'Drag the bulb to play. Select and drag content to arrange it.'
-      : 'Hover near a curled sticker corner to relax it. Select HTML text freely; the bulb is still draggable.';
+      : 'Hover near a sticker corner to relax it; press and hold the sticker to flatten it. Release to restore. HTML text and the bulb remain interactive.';
   }
 
   listen(query('.item-list'), 'click', (event) => {

@@ -23,7 +23,7 @@ export interface RenderedItem {
   html: HTMLDivElement | null;
   description: HTMLElement | null;
   width: number; height: number;
-  image?: { mesh: THREE.Mesh; bounds: StickerBounds; surface?: StickerSurface; hoverInfluence?: number };
+  image?: { mesh: THREE.Mesh; bounds: StickerBounds; surface?: StickerSurface; hoverInfluence?: number; pressInfluence?: number };
 }
 
 export function disposeItem(item: RenderedItem) {
@@ -137,7 +137,7 @@ export async function prepareItem(value: SceneItem): Promise<RenderedItem> {
 
 export function displayedStickerSettings(node: RenderedItem) {
   const saved = node.record.kind === 'image' ? node.record.sticker ?? defaultSticker() : defaultSticker();
-  return { ...saved, curl: saved.curl * (1 - STICKER.hover.strength * (node.image?.hoverInfluence ?? 0)) };
+  return { ...saved, curl: saved.curl * (1 - STICKER.hover.strength * (node.image?.hoverInfluence ?? 0)) * (1 - (node.image?.pressInfluence ?? 0)) };
 }
 
 function applyImageTreatment(node: RenderedItem) {
@@ -194,6 +194,12 @@ export class ContentLayer {
     applyImageTreatment(node);
   }
 
+  setPressInfluence(node: RenderedItem, influence: number) {
+    if (!node.image || (node.image.pressInfluence ?? 0) === influence) return;
+    node.image.pressInfluence = influence;
+    applyImageTreatment(node);
+  }
+
   updateImageSticker(id: string, patch: ImageStickerPatch) {
     const node = this.nodes.get(id);
     if (!node || node.record.kind !== 'image') throw new Error('Select an image to edit its sticker treatment.');
@@ -202,7 +208,7 @@ export class ContentLayer {
       rotation: rotation ?? node.record.rotation,
       sticker: { ...node.record.sticker, ...settings } }) };
     this.revisions.set(id, (this.revisions.get(id) ?? 0) + 1);
-    node.record = next; node.image!.hoverInfluence = 0; applyImageTreatment(node);
+    node.record = next; node.image!.hoverInfluence = 0; node.image!.pressInfluence = 0; applyImageTreatment(node);
   }
 
   async put(item: SceneItem) {

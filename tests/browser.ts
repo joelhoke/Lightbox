@@ -8,6 +8,7 @@ import { createEditor } from '../src/editor.ts';
 import { checkGlass } from './glass-checks.ts';
 import { checkStickers } from './sticker-checks.ts';
 import { checkStickerHover } from './sticker-hover-checks.ts';
+import { checkStickerPress } from './sticker-press-checks.ts';
 
 const results = document.querySelector<HTMLPreElement>('#results')!;
 const surface = document.querySelector<HTMLElement>('#test-surface')!;
@@ -163,6 +164,7 @@ async function run() {
     assert(alpha >= 126 && alpha <= 129, 'Image import preserves partial alpha values');
     await checkStickers(scene, surface, editorHost, assert, visibleFilament);
     await checkStickerHover(scene, surface, assert);
+    await checkStickerPress(scene, surface, assert);
     await visibleFilament('After sticker, rotation and content checks');
     const cable = world.getObjectByName('simulated-cord') as THREE.InstancedMesh;
     const capacity = cable.instanceMatrix.count;
